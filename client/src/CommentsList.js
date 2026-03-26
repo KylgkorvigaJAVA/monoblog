@@ -1,15 +1,14 @@
 import React, {useEffect, useState} from 'react';
 import axios from 'axios';
 
-const CommentsList = ({ postid }) => {
+const CommentsList = ({ postid, commentsMap }) => {
     const [comments, setComments] = useState([]);
     
     useEffect(() => {
         const fetchComments = async () => {
             try {
                 const res = await axios.get(`http://localhost:5000/posts/${postid}/comments`);
-                const comments = res.data;
-                setComments(comments);
+                setComments(res.data);
             } catch (err) {
                 console.error(err);
             }
@@ -17,7 +16,9 @@ const CommentsList = ({ postid }) => {
         fetchComments();
     }, [postid]);
 
-    const renderedComments = comments.map((comment) => {
+    const allComments = [...comments, ...(commentsMap[postid] || [])];
+
+    const renderedComments = allComments.map((comment) => {
         return <li key={comment.id}>{comment.content}</li>;
     });
 

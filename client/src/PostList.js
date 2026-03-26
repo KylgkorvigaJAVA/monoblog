@@ -5,6 +5,7 @@ import CommentCreate from "./CommentCreate";
 
 const PostList = () => {
     const [posts, setPosts] = useState([]);
+    const [commentsMap, setCommentsMap] = useState({});
 
     useEffect(() => {
         const fetchPosts = async () => {
@@ -19,14 +20,21 @@ const PostList = () => {
         fetchPosts();
     }, []);
 
+    const onCommentAdded = (postId, newComment) => {
+        setCommentsMap(prev => ({
+            ...prev,
+            [postId]: [...(prev[postId] || []), newComment]
+        }));
+    };
+
     console.log(posts);
 
     const postsForRender = posts.map(post => (
         <div className="card" style={{ width: '30%', marginBottom: '20px'}} key={post.id}>
             <div className="card-body">
                 <h3>{post.title}</h3>
-                <CommentsList postid={post.id} />
-                <CommentCreate postid={post.id} />
+                <CommentsList postid={post.id} commentsMap={commentsMap} />
+                <CommentCreate postid={post.id} onCommentAdded={onCommentAdded} />
             </div>
         </div>
     ));

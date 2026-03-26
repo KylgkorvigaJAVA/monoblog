@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useState } from "react";
 
-const CommentCreate = ({ postid }) => {
+const CommentCreate = ({ postid, onCommentAdded }) => {
     const [content, setContent] = useState("");
 
     const onChange = (event) => {
@@ -10,7 +10,8 @@ const CommentCreate = ({ postid }) => {
 
     const onSubmit = async (event) => {
         event.preventDefault();
-        await axios.post(`http://localhost:5000/posts/${postid}/comments`, {content});
+        const res = await axios.post(`http://localhost:5000/posts/${postid}/comments`, {content});
+        onCommentAdded(postid, res.data);
         setContent("");
     };
 

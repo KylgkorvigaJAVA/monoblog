@@ -1,5 +1,6 @@
 const express = require('express');
 const { randomBytes } = require('node:crypto');
+const axios = require('axios');
 /* const cors = require('cors'); */
 
 const app = express();
@@ -39,9 +40,30 @@ app.post('/posts/:id/comments', (req, res) => {
         content
     };
     postComments.push(comment);
+    console.log('Comment created:', comment);
+    
+    console.log('Sending CommentCreated event to eventbus...');
+    axios.post('http://localhost:5005/events', {
+        type: 'CommentCreated',
+        data: {
+            id: comment.id,
+            content: comment.content,
+            postId: comment.postId
+        }
+    }).then(() => {
+        console.log('Event sent successfully');
+    }).catch((err) => {
+        console.error('Error emitting event:', err.message);
+    });
+    
     res.status(201).json(comment);
 });
 
+app.post('/events', (req, res) => {
+    console.log('Received Event:', req.body);
+    res.json({ });
+});
+
 app.listen(5001, () => {
-    console.log('Server is running on port 5001');
+    console.log('Comments service listening on port 5001');
 });
