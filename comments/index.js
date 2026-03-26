@@ -60,7 +60,7 @@ app.post('/posts/:id/comments', (req, res) => {
 });
 
 app.post('/events', (req, res) => {
-    console.log('Received Event:', req.body);
+    // console.log('Received Event:', req.body);
     res.json({ });
 });
 
