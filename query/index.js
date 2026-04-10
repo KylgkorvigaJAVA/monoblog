@@ -20,9 +20,27 @@ app.post('/events', (req, res) => {
     }
 
     if(req.body.type === 'CommentCreated') {
-        const { id, content, postId } = req.body.data;
+        const { id, content, postId, status } = req.body.data;
         const post = posts[postId];
-        post.comments.push({ id, content });
+        post.comments.push({ id, content, status });
+    }
+
+    if(req.body.type === 'CommentModerated') {
+        const { id, postId, status } = req.body.data;
+        const post = posts[postId];
+        const comment = post.comments.find(c => c.id === id);
+        if (comment) {
+            comment.status = status;
+        }
+    }
+
+    if(req.body.type === 'CommentUpdated') {
+        const { id, postId, status } = req.body.data;
+        const post = posts[postId];
+        const comment = post.comments.find(c => c.id === id);
+        if (comment) {
+            comment.status = status;
+        }
     }
 
     console.log(posts);

@@ -48,7 +48,8 @@ app.post('/posts/:id/comments', (req, res) => {
         data: {
             id: comment.id,
             content: comment.content,
-            postId: comment.postId
+            postId: comment.postId,
+            status: 'pending'
         }
     }).then(() => {
         console.log('Event sent successfully');
@@ -57,6 +58,35 @@ app.post('/posts/:id/comments', (req, res) => {
     });
     
     res.status(201).json(comment);
+});
+
+app.put('/posts/:postId/comments/:id/status', (req, res) => {
+    const postId = req.params.postId;
+    const commentId = req.params.id;
+    const status = req.body.status;
+
+    const comment = postComments.find(c => c.id === commentId && c.postId === postId);
+    
+    if (!comment) {
+        return res.status(404).json({ error: 'Comment not found' });
+    }
+
+    comment.status = status;
+    console.log('Comment status updated:', comment);
+
+    // Emit CommentUpdated event
+    axios.post('http://localhost:5005/events', {
+        type: 'CommentUpdated',
+        data: {
+            id: comment.id,
+            postId: comment.postId,
+            status: status
+        }
+    }).catch((err) => {
+        console.error('Error emitting CommentUpdated event:', err.message);
+    });
+
+    res.json(comment);
 });
 
 app.post('/events', (req, res) => {

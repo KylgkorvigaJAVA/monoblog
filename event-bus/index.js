@@ -20,6 +20,10 @@ app.post('/events', (req, res) => {
         console.error('Error forwarding event to query service:', err.message);
     });
 
+    axios.post('http://localhost:5003/events', event).catch((err) => {
+        console.error('Error forwarding event to moderation service:', err.message);
+    });
+
     res.json({ status: 'OK' });
 });
 
