@@ -3,6 +3,8 @@ const { randomBytes } = require('node:crypto');
 const cors = require('cors');
 const { default: axios } = require('axios');
 
+const EVENT_BUS_URL = process.env.EVENT_BUS_URL || 'http://localhost:5005';
+
 const app = express();
 app.use(express.json());
 app.use(cors({origin: 'http://localhost:3000'}));
@@ -22,7 +24,7 @@ app.post('/posts', async (req, res) => {
     };
     posts.push(post);
 
-    axios.post('http://localhost:5005/events', {
+    axios.post(`${EVENT_BUS_URL}/events`, {
         type: 'PostCreated',
         data: post
     }).catch((err) => {
@@ -56,7 +58,7 @@ app.post('/posts/:id/comments', (req, res) => {
     postComments.push(comment);
     // 
     
-    axios.post('http://localhost:5005/events', {
+    axios.post(`${EVENT_BUS_URL}/events`, {
         type: 'CommentCreated',
         data: {
             id: comment.id,
@@ -86,7 +88,7 @@ app.put('/posts/:postId/comments/:id/status', (req, res) => {
     console.log('Comment status updated:', comment);
 
     // Emit CommentUpdated event
-    axios.post('http://localhost:5005/events', {
+    axios.post(`${EVENT_BUS_URL}/events`, {
         type: 'CommentUpdated',
         data: {
             id: comment.id,

@@ -1,0 +1,56 @@
+services:
+  event-bus:
+    build: ./event-bus
+    network_mode: host
+    environment:
+      - NODE_ENV=production
+      - POSTS_URL=http://localhost:5000
+      - COMMENTS_URL=http://localhost:5001
+      - QUERY_URL=http://localhost:5002
+      - MODERATION_URL=http://localhost:5003
+
+  posts:
+    build: ./posts
+    network_mode: host
+    environment:
+      - NODE_ENV=production
+      - EVENT_BUS_URL=http://localhost:5005
+    depends_on:
+      - event-bus
+
+  comments:
+    build: ./comments
+    network_mode: host
+    environment:
+      - NODE_ENV=production
+      - EVENT_BUS_URL=http://localhost:5005
+    depends_on:
+      - event-bus
+
+  query:
+    build: ./query
+    network_mode: host
+    environment:
+      - NODE_ENV=production
+      - EVENT_BUS_URL=http://localhost:5005
+    depends_on:
+      - event-bus
+
+  moderation:
+    build: ./moderation
+    network_mode: host
+    environment:
+      - NODE_ENV=production
+      - EVENT_BUS_URL=http://localhost:5005
+    depends_on:
+      - event-bus
+
+  client:
+    build: ./client
+    network_mode: host
+    environment:
+      - REACT_APP_POSTS_URL=http://localhost:5000
+      - REACT_APP_QUERY_URL=http://localhost:5002
+    depends_on:
+      - posts
+      - query

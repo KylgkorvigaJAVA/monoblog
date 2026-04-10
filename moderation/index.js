@@ -1,6 +1,8 @@
 const express = require('express');
 const axios = require('axios');
 
+const EVENT_BUS_URL = process.env.EVENT_BUS_URL || 'http://localhost:5005';
+
 const app = express();
 app.use(express.json());
 
@@ -17,7 +19,7 @@ app.post('/events', (req, res) => {
         console.log(`Moderating comment ${data.id}: status = ${status}`);
 
         // Send CommentModerated event back to event bus
-        axios.post('http://localhost:5005/events', {
+        axios.post(`${EVENT_BUS_URL}/events`, {
             type: 'CommentModerated',
             data: {
                 id: data.id,
