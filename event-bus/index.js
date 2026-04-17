@@ -13,7 +13,9 @@ app.post('/events', (req, res) => {
     const event = req.body;
     console.log('Received Event:', event.type);
 
-    axios.post(`${POSTS_URL}/events`, event).catch((err) => {
+    event.push(event);
+
+    axios.post('http://posts-srv:5000/events', event).catch(err => {
         console.error('Error forwarding event to posts service:', err.message);
     });
 
@@ -33,5 +35,5 @@ app.post('/events', (req, res) => {
 });
 
 app.listen(5005, () => {   
-    console.log('Event bus listening on port 5005');
+    console.log('EVENT BUS listening on port 5005');
 });
