@@ -9,25 +9,27 @@ const MODERATION_URL = process.env.MODERATION_URL || 'http://localhost:5003';
 const app = express();
 app.use(express.json());
 
+const events = [];
+
 app.post('/events', (req, res) => {
     const event = req.body;
     console.log('Received Event:', event.type);
 
-    event.push(event);
+    events.push(event);
 
     axios.post('http://posts-srv:5000/events', event).catch(err => {
         console.error('Error forwarding event to posts service:', err.message);
     });
 
-    axios.post(`${COMMENTS_URL}/events`, event).catch((err) => {
+    axios.post('http://comments-srv:5001/events', event).catch((err) => {
         console.error('Error forwarding event to comments service:', err.message);
     });
 
-    axios.post(`${QUERY_URL}/events`, event).catch((err) => {
+    axios.post('http://query-srv:5002/events', event).catch((err) => {
         console.error('Error forwarding event to query service:', err.message);
     });
 
-    axios.post(`${MODERATION_URL}/events`, event).catch((err) => {
+    axios.post('http://moderation-srv:5003/events', event).catch((err) => {
         console.error('Error forwarding event to moderation service:', err.message);
     });
 
